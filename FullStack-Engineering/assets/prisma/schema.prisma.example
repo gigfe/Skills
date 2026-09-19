@@ -1,0 +1,77 @@
+// Se copia a /backend/prisma/schema.prisma y se adapta (nombre de entidad,
+// campos) a lo que pida el módulo. Correr `npx prisma migrate dev --name init`
+// después de editarlo — eso genera la migración versionada en prisma/migrations/.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String // bcrypt, nunca texto plano
+  rolId        Int
+  rol          Rol      @relation(fields: [rolId], references: [id])
+  tasks        Task[]
+  createdAt    DateTime @default(now())
+
+  // Soft-delete: "eliminar" una cuenta no borra la fila (rompería las
+  // relaciones con lo que ya creó), solo la desactiva.
+  desactivadoEn DateTime?
+
+  @@index([rolId])
+}
+
+// Los roles son datos operativos, NO un enum: crear "Supervisor" o renombrar
+// uno existente es un INSERT/UPDATE, no un cambio de código con redeploy.
+model Rol {
+  id        Int      @id @default(autoincrement())
+  rol       String   @unique @db.VarChar(50)
+  createdAt DateTime @default(now())
+
+  usuarios Usuario[]
+  permisos RolPermiso[]
+}
+
+// Catálogo de capacidades. Las filas las siembra el seed a partir del catálogo
+// en código (core/permissions/catalogo.ts): el código define qué permisos
+// EXISTEN, porque son los que consultan las rutas. Lo que vive en la base es a
+// qué rol se le concede cada uno.
+model Permiso {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique @db.VarChar(60)
+  descripcion String
+  createdAt   DateTime @default(now())
+
+  roles RolPermiso[]
+}
+
+// La concesión en sí: editable sin redeploy. Un rol nuevo con sus permisos es
+// un par de INSERT, no un cambio de código.
+model RolPermiso {
+  rolId      Int
+  permisoId  Int
+  asignadoEn DateTime @default(now())
+
+  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  permiso Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId])
+  @@index([permisoId])
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  userId      Int
+  user        Usuario  @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}

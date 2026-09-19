@@ -1,0 +1,92 @@
+# Se copia a <proyecto>/.github/workflows/ci-cd.yml SOLO cuando el usuario pide
+# preparar el proyecto para producción — no es parte del scaffolding inicial
+# (ver "Preparar un proyecto para producción" en SKILL.md).
+#
+# Build + lint + typecheck + test corren siempre en push/PR a main. El job de
+# deploy queda comentado hasta que el target de infraestructura esté decidido
+# (ver references/deployment.md) — activarlo a mano reemplazando los pasos de
+# ejemplo por los reales del target elegido. Esta skill nunca ejecuta
+# `git push`, `gh` ni configura secrets remotos: eso es manual del usuario en
+# GitHub → Settings → Secrets and variables → Actions.
+
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend — lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run lint --if-present
+      - run: npx tsc --noEmit
+      # Descomentar cuando el proyecto tenga un test runner configurado:
+      # - run: npm test
+      - run: npm run build
+
+  frontend:
+    name: Frontend — lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint --if-present
+      - run: npx tsc --noEmit
+      # Descomentar cuando el proyecto tenga un test runner configurado:
+      # - run: npm test
+      - run: npm run build
+
+  # ---------------------------------------------------------------------
+  # deploy:
+  #   name: Deploy a producción
+  #   runs-on: ubuntu-latest
+  #   needs: [backend, frontend]
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     # --- Ejemplo target VPS Linux + Docker (GHCR + SSH) ---
+  #     # - uses: docker/login-action@v3
+  #     #   with:
+  #     #     registry: ghcr.io
+  #     #     username: ${{ github.actor }}
+  #     #     password: ${{ secrets.GITHUB_TOKEN }}
+  #     # - run: |
+  #     #     docker build -t ghcr.io/${{ github.repository }}/backend:latest -f backend/Dockerfile.backend backend
+  #     #     docker build -t ghcr.io/${{ github.repository }}/frontend:latest -f frontend/Dockerfile.frontend frontend
+  #     #     docker push ghcr.io/${{ github.repository }}/backend:latest
+  #     #     docker push ghcr.io/${{ github.repository }}/frontend:latest
+  #     # - uses: appleboy/ssh-action@v1
+  #     #   with:
+  #     #     host: ${{ secrets.DEPLOY_HOST }}
+  #     #     username: ${{ secrets.DEPLOY_USER }}
+  #     #     key: ${{ secrets.DEPLOY_SSH_KEY }}
+  #     #     script: |
+  #     #       cd /opt/app && docker compose pull && docker compose up -d
+  #     #       docker compose exec -T backend npx prisma migrate deploy
+  #
+  #     # --- Ejemplo target PaaS (Render/Railway) ---
+  #     # - run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+  # ---------------------------------------------------------------------
