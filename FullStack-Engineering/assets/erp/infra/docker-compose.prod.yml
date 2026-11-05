@@ -1,0 +1,56 @@
+# Solo el proxy publica puertos. Docker se salta UFW en los puertos publicados:
+# db y redis no deben declarar "ports". Fija tags o digests reales de tus imágenes.
+services:
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks: [edge]
+  api:
+    image: ${API_IMAGE:?}
+    restart: unless-stopped
+    env_file: .env.api  # DATABASE_URL como erp_app
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_started }
+    networks: [edge, internal]
+  web:
+    image: ${WEB_IMAGE:?}
+    restart: unless-stopped
+    networks: [edge]
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: erp
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets: [postgres_password]
+    volumes: [db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres -d erp]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [internal]
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: [redis-server, --appendonly, "yes", --maxmemory-policy, noeviction]
+    volumes: [redis-data:/data]
+    networks: [internal]
+networks:
+  edge:
+  internal:
+    internal: true
+volumes:
+  caddy-data:
+  caddy-config:
+  db-data:
+  redis-data:
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password

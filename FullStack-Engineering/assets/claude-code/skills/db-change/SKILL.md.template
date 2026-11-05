@@ -1,0 +1,17 @@
+---
+description: Aplica un cambio de base de datos de forma segura, con migración, permisos y tests.
+argument-hint: "[descripción-del-cambio]"
+disable-model-invocation: true
+---
+Cambio pedido: $ARGUMENTS
+
+Con `db-architect`:
+
+1. Revisa los SPs, adapters y tests afectados.
+2. Indica si es compatible hacia atrás. Si no, propón expand/contract.
+3. Escribe una migración nueva con su `down`, si es reversible.
+4. Actualiza o agrega tests pgTAP, incluidos los de permisos.
+5. Corre todo solo contra la base local.
+6. Si cambia una firma, actualiza el adapter y `sp-error.mapper.ts`.
+
+Termina con riesgos: bloqueos, pérdida de datos y orden del despliegue.

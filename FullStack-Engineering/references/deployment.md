@@ -1,10 +1,12 @@
-# Deployment (diferido)
+# Perfil Express — Deployment (diferido)
 
-Nada de esto es parte del scaffolding inicial de un proyecto nuevo — se genera solo cuando el usuario pide explícitamente preparar el proyecto para producción (ver esa sección en `SKILL.md`). `dev-FS` Fase 2 es la razón: Docker/CI/hosting cuestan configuración real, se posponen hasta que hay evidencia de necesidad, a diferencia de TypeScript/Zod/capas/migraciones que se hacen siempre porque no cuestan nada extra.
+Para el Perfil ERP, usa `infra-vps.md`.
+
+Nada de esto es parte del scaffolding inicial de un proyecto nuevo — se genera solo cuando el usuario pide explícitamente preparar el proyecto para producción (ver "Preparar para producción" en `express-profile.md`). La razón: Docker/CI/hosting cuestan configuración real, se posponen hasta que hay evidencia de necesidad, a diferencia de TypeScript/Zod/capas/migraciones que se hacen siempre porque no cuestan nada extra.
 
 Este archivo cubre el *procedimiento* de deploy. Los requisitos de seguridad del entorno de producción (HTTPS/TLS obligatorio, gestión de secretos, hardening de servidor, rotación de secretos filtrados) viven en la sección "Seguridad de infraestructura/despliegue" de `security.md` — revisarla siempre junto con este checklist, no solo el día del deploy.
 
-## Checklist de `dev-FS` cuando el 10% se confirma
+## Checklist al pasar a producción
 
 1. `.env` de producción (`assets/deployment/.env.production.example` como plantilla, sin secretos reales).
 2. Elegir hosting — si el tráfico es nacional/regional, priorizar datacenter cerca de esa región.
@@ -17,7 +19,7 @@ Ningún paso de este checklist toca la arquitectura del proyecto — es configur
 
 `assets/deployment/Dockerfile.backend` (multi-stage: build con `tsc`, runtime `node:20-alpine` no-root, healthcheck en `/health`), `Dockerfile.frontend` (build Vite, runtime `nginx:alpine` sirviendo `/dist` con fallback SPA y proxy `/api`, `nginx.conf`).
 
-`docker-compose.yml` incluye `backend` + `frontend` + `postgres` (a diferencia del stack SQL Server, Postgres en contenedor Linux es un target de producción razonable, no solo de dev — si el hosting ofrece Postgres gestionado, comentar el servicio `postgres` y apuntar `DATABASE_URL` al endpoint gestionado).
+`docker-compose.yml` incluye `backend` + `frontend` + `postgres` (Postgres en contenedor Linux es un target de producción razonable, no solo de dev; si el hosting ofrece Postgres gestionado, comentar el servicio `postgres` y apuntar `DATABASE_URL` al endpoint gestionado).
 
 ## Targets
 

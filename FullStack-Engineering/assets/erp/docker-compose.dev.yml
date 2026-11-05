@@ -1,0 +1,23 @@
+# Dev local. Puertos solo en 127.0.0.1. Credenciales de desarrollo: nunca las reutilices.
+# Almacenamiento S3: elige la imagen tras revisar "Almacenamiento de objetos" en infra-vps.md.
+services:
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile.pgtap
+    environment:
+      POSTGRES_DB: erp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?define POSTGRES_PASSWORD en .env}
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: [db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres -d erp]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, --maxmemory-policy, noeviction]  # BullMQ pierde jobs si Redis expulsa claves
+    ports: ["127.0.0.1:6379:6379"]
+volumes:
+  db-data:

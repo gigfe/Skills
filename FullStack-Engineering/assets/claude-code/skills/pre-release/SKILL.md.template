@@ -1,0 +1,14 @@
+---
+description: Verifica si el proyecto está listo para salir a producción.
+disable-model-invocation: true
+---
+Evalúa si esta versión puede salir a producción. No despliegues nada.
+
+1. Corre `npm run verify` y `npm run test:integration`; reporta el resultado real.
+2. `security-reviewer`: revisión de los cambios desde el último release.
+3. `devops`: revisa Compose, puertos, secretos, backups, restauración y monitoreo.
+4. Revisa migraciones pendientes: orden, compatibilidad y rollback.
+
+Marca cada punto como ✅ verificado, ⚠️ no verificable desde aquí o ❌ falla. Da un veredicto de **sale** o
+**no sale**, con los bloqueantes. Lo que solo se puede comprobar en el servidor, déjalo como tarea para
+Fernando; no lo marques como cumplido.

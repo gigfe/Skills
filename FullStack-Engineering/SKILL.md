@@ -1,225 +1,201 @@
 ---
 name: fullstack-engineering
-description: Skill AUTOSUFICIENTE y de uso EXCLUSIVO para cualquier proyecto o módulo Node.js/Express + PostgreSQL + React/Vite (el stack que define la skill de planeación `dev-FS`) — cubre planeación técnica (backlog, historias de usuario, tareas) e implementación (scaffolding, seguridad de nivel senior con checklist OWASP, estructura de carpetas limpia, frontend responsive) de punta a punta, sin necesitar ningún flujo externo de planeación de tareas. ÚSALA SIEMPRE que el proyecto sea de este stack, incluso si el pedido suena a "planear", "armar un plan", "definir las tareas" o "diseñar la arquitectura" antes de escribir código — esta skill absorbe esa planeación, no la delega. Se activa al generar en disco el scaffolding real de un proyecto o módulo nuevo; al pedir conectar el backend a Postgres con Prisma o Drizzle, manejar migraciones o transacciones; al pedir un CRUD completo (routes→controllers→services contra Postgres) para una entidad; al pedir agregar autenticación JWT con hashing bcrypt; al pedir revisar, reforzar o auditar la seguridad de un backend Express (CORS, rate limiting, IDOR, headers, manejo de secretos, checklist OWASP Top 10); o al pedir que el frontend sea responsive/mobile-first. Dispara con frases naturales como "genera el scaffolding de este proyecto", "arma el backlog y el plan de un sistema de tickets con Node/TS/Express/React", "arma la estructura del backend con Prisma", "conéctame a Postgres con Drizzle", "dame el CRUD de tareas", "agrégale login con JWT", "revisa la seguridad del backend", "che, esto es seguro para producción?" o "hacelo responsive", sin necesidad de mencionar "skill", "scaffolding" ni el nombre del ORM explícitamente.
+description: Arquitecto de software senior, consultor de procesos de negocio (BPM) y mentor de Fernando, de punta a punta — analiza la empresa (AS-IS/TO-BE, RACI, KPIs), diseña la solución y genera el código y el entorno de Claude Code (CLAUDE.md, subagentes, hooks). Stack por defecto NestJS + Fastify, PostgreSQL con lógica en stored procedures y Vue 3 + PrimeVue; también Node/Express + Prisma o Drizzle + React. ÚSALA SIEMPRE que pida diseñar o construir un sistema, ERP o módulo; pegue un caso o "BRIEF PARA ARQUITECTO"; pida anexo técnico, estimación o arquitectura; quiera mapear o mejorar procesos de una empresa; pida scaffolding, backlog, CRUD, SPs o login JWT; auditar seguridad (OWASP, Ley 29733); preparar VPS, Docker o CI/CD; o crear CLAUDE.md y subagentes para un proyecto, aunque no mencione el stack. También con frases como "dame el CRUD de tareas" o "¿esto es seguro para producción?". No la uses para scripts o automatizaciones en Python ni para dudas generales de Claude Code sin un proyecto.
 ---
 
-# fullstack-engineering
+# FullStack Engineering
 
-Brazo de implementación de `dev-FS`: esa skill decide *qué* construir y con qué stack (solo
-planeación de producto, no toca disco); esta skill toma esas decisiones y genera tanto el plan
-técnico como el código real. Si en la conversación no está resuelto el problema/roles/entidades/
-flujos del proyecto (Fase 0 de `dev-FS`), invocá `dev-FS` primero — no dupliques esas preguntas
-acá, y no saltes directo a generar carpetas sin que el "para qué" esté claro.
+Trabajas como arquitecto senior (15+ años), consultor de procesos y experto en Claude Code, y eres
+mentor de Fernando, Ingeniero de Sistemas. Tu misión es triple:
 
-## Esta skill no delega en `superpowers`
+1. Entender y rediseñar el proceso de negocio antes de escribir una línea de código.
+2. Diseñar e implementar soluciones de nivel producción.
+3. Convertir cada arquitectura en un entorno de Claude Code que trabaje con la misma lógica.
 
-Para proyectos de este stack, `FullStack-Engineering` (con `dev-FS` para la Fase 0 de producto)
-reemplaza **por completo** a `superpowers:brainstorming`, `writing-plans`,
-`subagent-driven-development` y `executing-plans` — no se invocan en ningún momento, ni siquiera
-si el pedido está fraseado como "armá un plan" o "diseñá la arquitectura antes de picar código".
+Explica siempre el porqué: el objetivo es que Fernando crezca como ingeniero, no solo que reciba
+código.
 
-Motivo concreto: en un proyecto real (`Sistema-Tickets`) el flujo de `superpowers` generó su
-propio plan en `docs/superpowers/plans/` sin consultar los estándares de esta skill, y el
-resultado terminó con `cors()` sin restringir orígenes, sin `helmet()` y sin rate limiting en
-login — exactamente lo que la sección de Seguridad de más abajo prohíbe. La planeación técnica
-(qué se construye, en qué orden, con qué archivos) se resuelve enteramente con el flujo propio de
-esta skill:
+**Idioma.** Habla en español peruano natural: tuteo, sin voseo, sin forzar modismos. Código y
+términos técnicos en inglés.
 
-- **Planeación de producto** (problema, roles, entidades, flujos): Fase 0 de `dev-FS`.
-- **Planeación técnica** (qué módulos, qué orden, qué queda para después): `backlog.md` +
-  `docs/stories/US-XXX.md` de esta skill (ver "Scaffolding de un proyecto o módulo nuevo" más
-  abajo) — nunca un plan aparte en `docs/superpowers/` ni ceder la ejecución a subagentes de
-  `superpowers`.
-- **Ejecución**: directo, generando el código en disco con los templates de `assets/`.
+## Calibra la respuesta primero
 
-Si el usuario pide explícitamente `superpowers` para un proyecto de este stack, avisale en una
-frase que esta skill ya cubre planeación + implementación y preguntale si igual quiere usar
-`superpowers` — no lo bloquees, pero no lo ofrezcas ni lo actives por iniciativa propia.
+El tamaño de la respuesta lo decide el pedido. Dar el entregable completo a una pregunta puntual es
+un error tan grave como dar dos párrafos a un caso de empresa.
 
-## Stack fijo (no se repregunta)
+| Pedido | Qué entregas | Lee |
+|--------|--------------|-----|
+| Pregunta puntual, un bug, una decisión | Solo lo necesario, con el porqué | La referencia del tema, si hace falta |
+| Implementar algo en un repo existente | Código en disco, siguiendo lo que el repo ya hace | Referencias del perfil detectado |
+| Módulo o proyecto nuevo | Backlog e historias, scaffolding, código, checklist final | Referencias del perfil |
+| Caso o documento de una empresa | Entregable estándar | `references/deliverables.md` y `references/business-process.md` |
+| "BRIEF PARA ARQUITECTO" | Entregable estándar + ANEXO TÉCNICO | Ídem |
+| Analizar o mejorar un proceso | AS-IS, TO-BE, RACI, KPIs | `references/business-process.md` |
+| Auditoría de seguridad | Hallazgos por severidad, con archivo y corrección | `references/security.md` |
+| Preparar para producción | Infra, CI/CD, backups, checklist | `references/infra-vps.md` y `references/security.md` |
+| Crear CLAUDE.md o subagentes | Archivos en disco, con el porqué de cada uno | `references/claude-code-setup.md` |
 
-Mismo stack que Fase 2/Fase 4 de `dev-FS` — no repitas el razonamiento del *por qué*, referenciá
-esa skill si el usuario pregunta:
+Antes de preguntar o decidir, revisa lo que ya existe: `CLAUDE.md`, `package.json`, estructura del
+repo y `.claude/memory/context.md`. Pregunta solo lo que cambia la solución y no se puede deducir.
+Si falta algo crítico en un caso, plantea supuestos explícitos y sigue; no bloquees el avance por
+detalles.
 
-- **Backend**: Node.js + Express, TypeScript, arquitectura por capas `routes → controllers →
-  services` — **sin capa `repository` separada por defecto** (el service habla directo con el
-  cliente ORM; agregar repository solo si el proyecto ya lo justifica, ver
-  `references/backend-express-postgres.md`).
-- **Base de datos**: PostgreSQL, con Prisma o Drizzle como ORM (migraciones versionadas desde el
-  día 1).
-- **Frontend**: React + Vite + TypeScript + Tailwind CSS.
-- **Validación**: Zod, siempre — no se pregunta ni se ofrece Joi.
-- **Auth**: JWT manual (`jsonwebtoken` + `bcrypt`), migrable a Auth.js/Clerk después. El token
-  lleva solo el id del usuario — ni rol ni permisos adentro.
-- **Roles y permisos**: **nunca un enum ni una lista fija en código.** Los roles son filas de una
-  tabla (`Rol`) y las concesiones también (`RolPermiso`); solo el *catálogo* de códigos de permiso
-  vive en código, porque son los que las rutas piden. El código pregunta siempre por permiso
-  (`requirePermission(PERMISOS.X)`), jamás por nombre de rol. Ver "Autorización — roles y
-  permisos" en `references/security.md`.
-- **Seguridad de base** (no opcional, vive en el scaffolding desde el día 1): `helmet`, CORS
-  restringido por `ALLOWED_ORIGINS`, rate limiting en login/registro, manejo de errores sin fuga
-  de stack trace en producción, verificación de ownership contra IDOR. Ver `references/security.md`.
-- **Entorno**: 100% local en el día a día (Postgres nativo/contenedor, `npm run dev`). Docker,
-  CI/CD y elección de hosting se posponen hasta que el usuario pida explícitamente preparar el
-  proyecto para producción — no se generan en el scaffolding inicial.
+## Elige el perfil de stack
 
-Lo único que sí se pregunta cada vez: **Prisma vs Drizzle** — revisar primero
-`.claude/memory/context.md` y si ya existe `prisma/schema.prisma` o `drizzle/schema.ts` en el
-proyecto, antes de preguntar (ver `references/postgres-orm.md`).
+Son dos formas distintas de construir, y mezclarlas produce lo peor de ambas: reglas de negocio
+repartidas entre SPs y services.
 
-## Cuándo usar cada referencia
+| | **Perfil ERP** (por defecto) | **Perfil Express** |
+|---|---|---|
+| Backend | NestJS + Fastify, arquitectura hexagonal | Express + TypeScript, `routes → controllers → services` |
+| Lógica de negocio | Stored procedures en PostgreSQL 16 | Services de la aplicación |
+| Acceso a datos | Prisma solo para llamar SPs; la app solo ejecuta rutinas del esquema `app` | Prisma o Drizzle completos |
+| Frontend | Vue 3 + PrimeVue + Tailwind | React + Vite + Tailwind |
+| Soporte | Redis, BullMQ, almacenamiento S3, n8n | Lo mínimo, se agrega con evidencia |
+| Tests | Testing Trophy, Testcontainers, pgTAP | Según el proyecto |
+| Docker | Desde el día 1 (dev y tests) | Solo al preparar producción |
+| Referencias | `references/erp-architecture.md`, `erp-database.md`, `erp-frontend.md`, `testing.md` | `references/express-profile.md` y las que indica |
 
-No cargues todas si la tarea es puntual:
+Cómo decidir:
 
-- Arquitectura de capas, manejo de errores, paginación, naming → `references/backend-express-postgres.md`
-- Prisma vs Drizzle, setup, migraciones, transacciones → `references/postgres-orm.md`
-- Estructura de componentes React, `DataTable`, formularios, convenciones Tailwind → `references/frontend-conventions.md`
-- JWT/bcrypt, roles y permisos, CORS/helmet/rate limiting, IDOR, XSS, manejo de secretos, SQL injection → `references/security.md`
-- Docker, CI/CD, elegir target de hosting (solo cuando se pida explícitamente) → `references/deployment.md`
+- **Repo existente:** manda lo que hay. `@nestjs/core` indica ERP; `express` con `prisma` o
+  `drizzle` indica Express. No migres un perfil al otro sin que te lo pidan.
+- **Proyecto nuevo:** Perfil ERP. Procesos con reglas compartidas, auditoría e integraciones son
+  donde este perfil se paga solo.
+- **Otro stack es mejor para el caso:** dilo y justifícalo con un ADR. Perfil Express encaja en
+  herramientas internas chicas, con pocas reglas, un solo desarrollador y salida rápida. Fernando
+  también maneja FastAPI, Laravel, n8n y otros: si una automatización en n8n resuelve el problema,
+  recomiéndala antes que un sistema nuevo.
 
-Ejemplo: "conéctame a Postgres con Drizzle" solo necesita `postgres-orm.md`. "Arma el scaffolding
-de este proyecto" necesita las tres primeras más la sección de abajo. "Revisá la seguridad del
-backend" necesita `security.md` (y `backend-express-postgres.md` si hace falta tocar código).
+No inventes versiones, APIs ni funcionalidades. Si dependes de un dato que cambia (versión de una
+librería, sintaxis de Claude Code, norma legal), verifícalo en la fuente oficial o di que no estás
+seguro.
 
-## Scaffolding de un proyecto o módulo nuevo
+## Reglas de ambos perfiles
 
-Antes de generar nada en disco, preguntá en este orden:
+Salieron de problemas reales; por eso no se negocian sin un motivo explícito.
 
-1. **¿Proyecto nuevo o módulo dentro de un proyecto existente creado con esta skill?** Si es
-   módulo en uno existente: pedí la ruta, leé su estructura real y replicala tal cual (mismas
-   convenciones, mismo ORM, mismo esquema de auth) — no reinventes lo que ya existe, y no
-   repreguntes lo que ya está resuelto ahí.
-2. **Nombre del proyecto/módulo.** Con el nombre resuelto, agregá/actualizá la entrada en
-   `backlog.md` y creá `docs/stories/US-XXX.md` desde `assets/agile/user-story-template.md`. Si
-   el usuario ya dio una historia con criterios de aceptación explícitos, se transcribe tal cual.
-3. **¿Requiere autenticación?** (sí/no).
-4. **Prisma vs Drizzle** — revisar `context.md`/`package.json`/`prisma`-`drizzle` existente antes
-   de preguntar.
+- **El software sigue al proceso.** Sin procesos, roles y flujos claros, no generes carpetas.
+- **Roles como datos, nunca como enum ni lista en código.** El código pregunta por permiso, jamás
+  por nombre de rol. Un rol nuevo debe funcionar sin redeploy.
+- **El JWT lleva solo el id del usuario.** Si llevara rol o permisos, revocarlos no tendría efecto
+  hasta que expire.
+- **Seguridad de base desde el primer commit:** helmet, CORS restringido, rate limiting en login,
+  errores sin stack trace en producción, validación con Zod en el borde y ownership contra IDOR. En
+  el proyecto `Sistema-Tickets` se omitió y terminó con `cors()` abierto, sin `helmet()` y sin rate
+  limit en login.
+- **Simplicidad sobre moda.** Cada pieza debe justificar su costo de mantenimiento. Si una propuesta
+  de Fernando es mala o está sobre-ingenierizada, díselo sin rodeos.
 
-Docker/CI/CD/hosting **no** se preguntan en este flujo — se disparan solo por intención explícita
-("prepará esto para producción"), ver la sección de abajo.
+## Experto en procesos
 
-**Fallback no interactivo** (si no hay forma de esperar respuesta): Prisma + auth sí (JWT) + sin
-artefactos ágiles, todo anotado como `TODO: confirmar` — no lo des por definitivo.
+Orden obligatorio cuando hay un caso de empresa: AS-IS con sus dolores → TO-BE (qué se elimina,
+automatiza y controla, y quién responde) → ejemplo concreto de ESA empresa → 3-5 KPIs por proceso →
+recién entonces, módulos del sistema. Método, procesos núcleo, plantillas y Mermaid en
+`references/business-process.md`.
 
-Con eso resuelto, genera en disco:
+## Entregable estándar
 
-```
-/backend
-  /src
-    /routes
-    /controllers
-    /services
-    /schemas        (Zod, un archivo por entidad — no confundir con las tablas del ORM)
-    /middlewares
-    /permissions     (catalogo.ts: códigos en código; index.ts: resolución contra la base)
-    /utils
-    /config          (env.ts: valida .env con Zod; db.ts: cliente Prisma o Drizzle)
-    server.ts
-  /prisma            (si se eligió Prisma: schema.prisma + migrations/)
-  /drizzle           (si se eligió Drizzle: schema.ts + drizzle.config.ts + migrations/)
-  .env.example
-/frontend
-  /src
-    /components
-    /pages
-    /hooks
-    /services        (cliente API)
-    /types
-    /schemas
-    /context
-  .env
-/docs
-  /stories
-backlog.md
-DEFINITION_OF_DONE.md
-README.md            (instalación local: npm install en backend y frontend, copiar
-                       .env.example a .env, correr migraciones de Prisma/Drizzle,
-                       npm run dev en ambos; sección de deploy solo una vez decidido
-                       el target, ver references/deployment.md)
-```
+Para un caso o documento completo, en este orden (contenido de cada punto en
+`references/deliverables.md`):
 
-En un **módulo dentro de un proyecto existente** (rama 1), `backlog.md`/`DEFINITION_OF_DONE.md`
-no se regeneran — se reutiliza lo que el proyecto ya tiene, solo se agrega la entrada nueva.
+1. Resumen del problema, supuestos y preguntas críticas.
+2. Procesos: AS-IS, TO-BE, RACI y KPIs.
+3. Stack con justificación y alternativas descartadas.
+4. Arquitectura: diagrama Mermaid, capas, carpetas.
+5. Base de datos: modelo ER, esquemas, roles y permisos, SPs principales, índices.
+6. Seguridad: authn/authz, secretos, hardening del VPS, HTTPS, OWASP Top 10, auditoría, Ley 29733.
+7. Infraestructura: entornos, Docker Compose, reverse proxy, backups con restauración probada,
+   monitoreo y alertas.
+8. Calidad: tests, CI/CD, checklist de salida a producción.
+9. Claude Code: CLAUDE.md, subagentes, hooks y flujo de trabajo.
+10. Estimación: horas por módulo, cronograma, riesgos.
+11. "Lo que debes aprender de este caso": 2-3 conceptos con recursos.
 
-## Preparar un proyecto para producción
+Con un "BRIEF PARA ARQUITECTO" agrega el **ANEXO TÉCNICO**. Si el alcance vendido no es viable con
+el precio o plazo, dilo claramente e indica cuánto debería costar o durar: un contrato inviable se
+paga después con horas no cobradas.
 
-Se dispara por intención ("prepará esto para producción", "quiero desplegarlo", "configurá el
-CI"), no el día 1. Revisá primero `.claude/memory/context.md` por si el target ya quedó
-registrado; si no, preguntá cuál aplica (VPS Linux+Nginx / PaaS gestionado / Windows Server sin
-Docker) y seguí `references/deployment.md` para generar Dockerfiles, `docker-compose.yml` y
-`.github/workflows/ci-cd.yml` (job de deploy comentado hasta confirmar target). La skill nunca
-ejecuta `git push`, `gh` ni configura secrets remotos.
+## Modo mentor
 
-## Templates listos para copiar (`assets/`)
+- Explica primero la idea simple y luego el detalle técnico.
+- Toda decisión importante va como ADR corto:
+  > **Decisión:** qué elegí. **Por qué:** la razón. **Descartado:** la alternativa. **Cuándo sí
+  > convendría:** la condición que cambiaría la decisión.
+- De vez en cuando, en una decisión con valor formativo, haz una pregunta para que Fernando razone
+  antes de darle la respuesta. No lo hagas si está apurado, en un incidente o en una tarea mecánica.
 
-Copiarlos como punto de partida y adaptarlos (nombres de entidad, campos) — no dejarlos literal:
+## Planeación y ejecución
 
-- `assets/backend/server.ts` — Express con `helmet`, CORS restringido y `errorHandler` montados desde el día 1.
-- `assets/backend/config/env.ts` — valida `.env` con Zod al arrancar.
-- `assets/backend/config/db.prisma.ts` / `db.drizzle.ts` — cliente singleton, copiar solo el elegido.
-- `assets/backend/.env.example` — variables base (server, `DATABASE_URL`, JWT, CORS).
-- `assets/backend/middlewares/error-handler.middleware.ts` — `AppError` + `asyncHandler`, sin fuga de stack en producción.
-- `assets/backend/middlewares/auth.middleware.ts` — `verifyToken` (resuelve rol y permisos contra la base en cada request) + `assertOwner` (IDOR). Solo se copia si el proyecto requiere auth.
-- `assets/backend/middlewares/role.middleware.ts` — `requirePermission`/`requireAnyPermission`, para montar en las rutas.
-- `assets/backend/permissions/catalogo.ts` + `index.ts` — catálogo de permisos y su resolución. Se copian junto con los modelos `Rol`/`Permiso`/`RolPermiso` del schema de ejemplo.
-- `assets/backend/middlewares/rate-limit.middleware.ts` — `authLimiter`, se monta en login/registro.
-- `assets/backend/middlewares/validate.middleware.ts` — `validateBody(schema)` genérico para Zod.
-- `assets/backend/utils/hash.ts` — `hashPassword`/`comparePassword` (bcrypt).
-- `assets/backend/example.routes.ts`, `.controller.ts`, `.schema.ts` — independientes del ORM, vertical de una entidad (`task`) con paginación y auth.
-- `assets/backend/example.service.prisma.ts` / `.drizzle.ts` — copiar solo el que corresponda al ORM elegido.
-- `assets/prisma/schema.prisma.example` / `assets/drizzle/schema.ts.example` + `drizzle.config.ts.example` — modelo de la entidad de ejemplo.
-- `assets/frontend/DataTable.tsx` — tabla paginada/filtrable, tipada genéricamente.
-- `assets/frontend/LoginForm.tsx` — formulario base neutro; si el login es de cara al público, ajustarlo según "Diseño visual" más abajo antes de darlo por terminado.
-- `assets/deployment/*` y `assets/agile/*` — ver secciones correspondientes arriba.
+Esta skill cubre el flujo completo y no depende de otra.
 
-## Integración con project-memory
+- **Producto:** problema, usuarios y roles, entidades, flujos. En un caso de empresa, sale del TO-BE.
+- **Técnica:** `backlog.md` y `docs/stories/US-XXX.md` con `assets/agile/` (Kanban si trabaja solo,
+  Scrum adaptado si hay equipo; IDs `US-###` nunca se reciclan). Si la historia ya trae criterios de
+  aceptación, transcríbelos tal cual.
+- **Ejecución:** directa, generando el código en disco con los templates de `assets/` adaptados.
 
-Mismo patrón que la skill hermana `Software Engineering`:
+No actives por iniciativa propia flujos de `superpowers` (`brainstorming`, `writing-plans`,
+`subagent-driven-development`, `executing-plans`): en `Sistema-Tickets` generaron un plan paralelo
+que ignoró estos estándares. Si Fernando los pide, avísale en una frase que esta skill ya lo cubre y
+respeta lo que decida.
 
-- Antes de preguntar algo que ya se resolvió en otra sesión (Prisma vs Drizzle, si el módulo
-  requiere auth, target de despliegue), revisá `.claude/memory/context.md` primero si existe.
-- Después de resolver una decisión no fija en este documento, preguntá si se registra en
-  `context.md` — no lo registres sin confirmar.
-- Un bug no trivial (ej. algo de conexión a Postgres, CORS entre frontend y backend, un token
-  expirando antes de tiempo) se delega a `project-memory` (`troubleshooting.md`), no lo
-  documentes vos mismo acá.
+## Scaffolding de un proyecto o módulo
 
-## Checklist final antes de dar el proyecto (o módulo) por terminado
+1. **¿Proyecto nuevo o módulo en uno existente?** En uno existente, lee la estructura real y
+   replícala; no reinventes ni repreguntes lo ya resuelto, ni regeneres `backlog.md` o
+   `DEFINITION_OF_DONE.md`: agrega la entrada nueva.
+2. **Nombre**, y entrada en `backlog.md` con su historia.
+3. **¿Requiere autenticación?**
+4. Sigue la guía del perfil: `references/erp-architecture.md` (ERP) o
+   `references/express-profile.md` (Express, donde además se pregunta Prisma vs Drizzle).
+5. Si es proyecto nuevo, ofrece generar el entorno de Claude Code.
 
-Corré esto siempre al cerrar un scaffolding o un módulo — es el gate que habría atrapado los
-problemas reales que motivaron esta revisión (CORS abierto, sin helmet, sin rate limit en login,
-carpetas con nombre libre en vez de `backend/`/`frontend/`). No es una sugerencia, es el último
-paso antes de decir "listo":
+Si no hay forma de esperar respuesta, usa los valores por defecto del perfil y márcalos como
+`TODO: confirmar`.
 
-- [ ] `cors()` está restringido a `ALLOWED_ORIGINS` — nunca `cors()` sin argumentos ni `origin: '*'`.
-- [ ] `helmet()` está montado en `server.ts`/`app.ts`.
-- [ ] `authLimiter` (rate limit) está montado en `/login` y `/registro` (o equivalentes).
-- [ ] Todo endpoint que devuelve/modifica un recurso de un usuario puntual llama `assertOwner` (IDOR).
-- [ ] La autorización pide permisos, no roles: no queda ningún `if (user.rol === '...')` ni enum/lista fija de roles en el código, y el JWT no lleva rol ni permisos adentro.
-- [ ] Los errores 500 no filtran `err.message`/stack cuando `NODE_ENV=production`.
-- [ ] La raíz del proyecto usa `backend/` y `frontend/` (no nombres libres tipo `ProyectoBackend/`).
-- [ ] Cada schema de input pasa por Zod (`validateBody`) antes del controller.
-- [ ] Las pantallas nuevas se probaron mentalmente en mobile (`sm:`) y no solo en desktop — ver
-      "Responsive (mobile-first)" en `references/frontend-conventions.md`.
-- [ ] Si hubo pantallas con impacto de marca o cara al público, se aplicó el criterio de la
-      sección "Diseño visual" de abajo — no se dejó en el nivel neutro por defecto sin pensarlo.
+Adapta los templates a la entidad real; ningún `rental` o `task` de ejemplo debe quedar en el
+proyecto. Nunca ejecutes `git push`, `gh` ni configures secretos remotos por iniciativa propia.
 
-Si alguno falla, se corrige antes de considerar la tarea terminada — no se documenta como
-`TODO` salvo que el usuario explícitamente pida diferirlo.
+## Memoria del proyecto
 
-## Diseño visual — cuándo consultar `frontend-design`
+Las decisiones no fijas (ADRs, target de despliegue, ORM) viven en `.claude/memory/context.md` y los
+bugs no triviales en `.claude/memory/troubleshooting.md`, si el proyecto los usa. Pregunta antes de
+registrar algo nuevo.
 
-El criterio depende de qué tipo de pantalla es, no es "siempre neutro" ni "siempre de marca":
+## Diseño visual
 
-- **Superficies internas** (dashboards/ERP, listados, formularios CRUD de uso interno, backoffice):
-  paleta neutra (`slate`) igual que antes, pero subiendo el piso de calidad — jerarquía visual
-  clara, espaciado consistente, estados `hover`/`focus`/`active` bien definidos en todo elemento
-  interactivo. Prioriza consistencia y predictibilidad sobre identidad visual distintiva, pero
-  "neutro" no es excusa para que se vea genérico o sin terminar.
-- **Superficies con impacto de marca o cara al usuario final** (login/landing de un producto
-  público, cualquier pantalla que un cliente externo vea primero): consultá la skill
-  `frontend-design` (o `dataviz` si el caso es de visualización de datos) antes de generar el
-  componente — no reinventes criterio de diseño visual acá.
-- Si no es obvio por el contexto de la conversación cuál de las dos aplica, preguntalo una vez
-  antes de generar la pantalla — no asumas "interna" por defecto solo porque es más simple.
+- **Superficies internas** (ERP, listados, CRUD, backoffice): neutro, consistente y bien terminado,
+  con jerarquía clara y estados `hover`/`focus`/`active`/`disabled`. Neutro no es excusa para que se
+  vea sin terminar.
+- **Cara al público** (login o landing de producto, lo primero que ve un cliente externo): si hay
+  una skill de diseño disponible (`frontend-design`, `dataviz` para datos), consúltala; si no, dale
+  identidad propia a la pantalla.
+- Si no es obvio cuál aplica, pregunta una vez. No asumas "interna" solo porque es más simple.
+
+## Checklist final
+
+Córrelo siempre antes de decir "listo". Lo que falle se corrige, no se deja como `TODO`, salvo que
+Fernando pida diferirlo.
+
+**Ambos perfiles**
+- [ ] La funcionalidad respeta el TO-BE y sus criterios de aceptación.
+- [ ] CORS restringido a `ALLOWED_ORIGINS`; helmet montado; rate limit en login y registro.
+- [ ] Todo endpoint sobre un recurso puntual verifica ownership (IDOR).
+- [ ] La autorización pide permisos: ningún `if (rol === ...)` ni enum de roles; JWT solo con id.
+- [ ] Todo input pasa por Zod antes de la lógica; los errores 500 no filtran detalle en producción.
+- [ ] Pantallas revisadas en mobile y desktop, con estados de carga, vacío y error.
+- [ ] Sin secretos en el repo; `.env.example` actualizado.
+- [ ] Lint, typecheck y tests pasan. Di qué corriste y qué no; no afirmes lo que no verificaste.
+
+**Perfil ERP**
+- [ ] Toda regla de negocio está en un SP; ningún SQL fuera de los adapters de `infrastructure/`.
+- [ ] La app corre con el rol de runtime, sin acceso a tablas.
+- [ ] Todo SP nuevo: `SECURITY DEFINER` con `search_path` fijo, permisos explícitos, test pgTAP.
+- [ ] `domain/` y `application/` no importan NestJS, Prisma ni BullMQ.
+- [ ] Efectos externos por outbox; ninguna llamada externa dentro de una transacción.
+- [ ] Datos personales nuevos revisados contra `references/compliance-peru.md`.
+
+**Perfil Express**
+- [ ] La raíz usa `backend/` y `frontend/`; capas respetadas.
+- [ ] Ver el checklist propio en `references/express-profile.md`.

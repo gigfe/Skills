@@ -1,4 +1,4 @@
-# Backend — Convenciones Express + TypeScript + Postgres
+# Perfil Express — Backend
 
 ## Arquitectura por capas (sin repository por defecto)
 
@@ -10,7 +10,7 @@ routes → controllers → services
 - **controllers**: recibe `req`/`res`, llama al service, formatea la respuesta. Nunca importa Prisma/Drizzle directamente.
 - **services**: lógica de negocio Y acceso a datos — habla directo con `prisma` o `db` (Drizzle). No toca `req`/`res`.
 
-**Criterio senior, no atajo**: a diferencia del stack SQL Server (que sí separa `repository`), acá el ORM ya es la capa de acceso a datos — envolverlo en un `repository` que solo reenvía llamadas a Prisma/Drizzle es una capa que no gana nada por ahora. Si el proyecto crece al punto de necesitar aislar el ORM (tests con mocks pesados, swap de motor de datos), agregar `repository` en ese momento — no antes. Mismo principio de costo cero vs costo real que usa `dev-FS` para el stack, aplicado ahora al código.
+**Criterio senior, no atajo**: el ORM ya es la capa de acceso a datos — envolverlo en un `repository` que solo reenvía llamadas a Prisma/Drizzle es una capa que no gana nada por ahora. Si el proyecto crece al punto de necesitar aislar el ORM (tests con mocks pesados, swap de motor de datos), agregar `repository` en ese momento — no antes.
 
 Un archivo por entidad y capa: `task.routes.ts`, `task.controller.ts`, `task.service.ts`, `task.schema.ts`. Todas las rutas se montan en un router central (`/backend/src/routes/index.ts`).
 
@@ -35,7 +35,7 @@ Usa siempre `assets/backend/middlewares/error-handler.middleware.ts` como base:
 
 ## Validación de inputs
 
-Zod está fijo en este stack (no se pregunta, a diferencia de Zod/Joi del stack SQL Server). Un schema por entidad en `/backend/src/schemas/<entidad>.schema.ts`, reutilizado por el middleware genérico `validateBody` (`assets/backend/middlewares/validate.middleware.ts`) montado en la ruta, antes del controller — nunca dentro de service.
+Zod está fijo en este stack y no se pregunta. Un schema por entidad en `/backend/src/schemas/<entidad>.schema.ts`, reutilizado por el middleware genérico `validateBody` (`assets/backend/middlewares/validate.middleware.ts`) montado en la ruta, antes del controller — nunca dentro de service.
 
 ```typescript
 router.post('/', validateBody(createTaskSchema), taskController.createTask);
@@ -73,4 +73,4 @@ No toca la base de datos — un healthcheck que depende de la DB puede reportar 
 
 ## Logging estructurado (diferido)
 
-`console.log`/`console.error` alcanza mientras el proyecto es chico. Si el volumen de logs o la necesidad de buscarlos en un target real lo justifica, migrar a `pino` (JSON en producción, pretty-print en dev) — no agregarlo por adelantado sin esa señal, mismo criterio de `dev-FS` para Docker/CI.
+`console.log`/`console.error` alcanza mientras el proyecto es chico. Si el volumen de logs o la necesidad de buscarlos en un target real lo justifica, migrar a `pino` (JSON en producción, pretty-print en dev) — no agregarlo por adelantado sin esa señal, igual que con Docker y CI.

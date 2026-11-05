@@ -1,0 +1,55 @@
+# <Proyecto>
+
+<Qué hace, para quién, y el proceso de negocio principal en 2-3 líneas.>
+Procesos y TO-BE: `docs/processes.md`. Decisiones: `docs/adr/`.
+
+## Stack
+NestJS + Fastify · Prisma solo para llamar SPs · PostgreSQL 16 · Vue 3 + PrimeVue + Tailwind · Redis ·
+BullMQ · almacenamiento S3 · n8n · Docker · VPS.
+
+## Arquitectura
+Hexagonal: `http` e `infrastructure` → `application` → `domain`. `domain` y `application` no importan
+NestJS, Prisma ni BullMQ. Módulos en `backend/src/modules/<modulo>/`; SQL en `db/`.
+
+## Reglas no negociables
+- Toda regla de negocio va en un SP de PostgreSQL. No la dupliques en TypeScript ni en Vue.
+- La app conecta como `erp_app`: solo ejecuta rutinas de `app`, sin acceso a tablas.
+- SQL solo en adapters de `infrastructure/`, parametrizado. Nunca `$queryRawUnsafe` con datos de usuario.
+- No uses `prisma migrate` ni `prisma db push`: las migraciones son SQL en `db/migrations/`.
+- Toda rutina: `SECURITY DEFINER`, `SET search_path = pg_catalog, pg_temp`, objetos calificados.
+- Nada externo (HTTP, correo, colas) dentro de un SP: usa `core.outbox`.
+- Roles como datos; el código pregunta por permiso (`@RequirePermission`), nunca por nombre de rol.
+- El JWT lleva solo el id del usuario.
+- Valida con Zod en el borde. Sin errores 500 con detalle al cliente.
+- Una feature debe respetar el TO-BE. Si el pedido lo contradice, avísalo antes de programar.
+
+## Comandos
+<Reemplaza por los reales; bórralos si no existen.>
+- `docker compose up -d`: servicios locales
+- `npm run db:migrate` / `npm run db:test`: migraciones / pgTAP
+- `npm run dev`
+- `npm run verify`: lint, typecheck y tests rápidos (lo exige el hook antes de cada commit)
+- `npm run test:integration`: Testcontainers
+- `npm run test:e2e`: Playwright
+
+## Testing
+Testing Trophy: mayor peso en integración real (pgTAP y Testcontainers). No mockees la base para probar
+reglas de negocio. Todo SP nuevo lleva test pgTAP; todo bug corregido deja su test.
+
+## Subagentes
+Usa un subagente solo cuando Fernando lo pida por nombre, con `@agent-<nombre>` o con un comando como
+`/new-module`. Por defecto, trabaja directo. Si crees que uno ayudaría, sugiérelo y espera su respuesta.
+
+Flujo de `/new-module`: process-analyst → db-architect → backend-dev → frontend-dev → test-engineer →
+security-reviewer → code-reviewer.
+
+## Lo que Claude NO debe hacer
+- Ejecutar migraciones o comandos contra staging o producción.
+- Leer `.env` ni imprimir secretos.
+- Hacer `git push` o abrir PRs sin que se lo pidan.
+- Instalar dependencias nuevas sin explicar por qué.
+- Afirmar que algo funciona sin haberlo verificado: di qué corriste y qué no.
+
+## Comunicación
+Español peruano; código y términos técnicos en inglés. En decisiones importantes: qué, por qué, qué se
+descartó y cuándo convendría la alternativa.

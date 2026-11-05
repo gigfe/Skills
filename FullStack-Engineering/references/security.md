@@ -1,6 +1,26 @@
 # Seguridad
 
-No es una sección opcional de "endurecer después" — lo que está acá vive en el scaffolding inicial por defecto (middlewares, `server.ts`, `hash.ts`), no es algo que haya que acordarse de pedir.
+No es una sección opcional de "endurecer después": lo que está acá vive en el scaffolding inicial por defecto, no es algo que haya que acordarse de pedir.
+
+## Cómo aplica a cada perfil
+
+Los principios valen para ambos perfiles. Los ejemplos de este archivo usan el Perfil Express; en el Perfil ERP cambian las piezas:
+
+| Tema | Perfil Express | Perfil ERP |
+|------|----------------|------------|
+| Validación | `validateBody` | `ZodValidationPipe` |
+| Headers y CORS | `helmet`, `cors` | `@fastify/helmet`, `enableCors` con `@fastify/cors` |
+| Rate limit | `express-rate-limit` | `@nestjs/throttler`, con Redis si hay varias instancias |
+| Permisos | `requirePermission` | `@RequirePermission` + `PermissionsGuard` + `app.user_has_permission` |
+| Ownership | `assertOwner` en el service | Dentro del SP, con `p_actor_id` |
+| Errores | `error-handler.middleware` | `DomainExceptionFilter` + `sp-error.mapper` |
+| SQL injection | ORM parametrizado | `$queryRaw` con tagged template; `format` y `USING` en SQL dinámico |
+| Mínimo privilegio en BD | Rol de la app sin DDL en producción | `erp_app` sin acceso a tablas (ver `erp-database.md`) |
+| XSS | `dangerouslySetInnerHTML` | `v-html` |
+
+Hardening del VPS, backups y monitoreo: `infra-vps.md`. Datos personales y Ley 29733: `compliance-peru.md`.
+
+**Formato de una auditoría.** Hallazgos por severidad, con archivo y línea, escenario de ataque concreto y corrección. Señala lo que no pudiste verificar.
 
 ## Validación de inputs
 
@@ -14,7 +34,7 @@ Todo input llega sin confiar en el frontend — el frontend puede ser bypaseado 
 
 ## Por qué no hay SQL injection en este stack
 
-Prisma y Drizzle parametrizan todas las queries por diseño — nunca interpolás un valor de usuario directo en un string SQL. Si en algún momento hace falta una query cruda (`$queryRaw`/`sql` de Drizzle), siempre con placeholders parametrizados, nunca con template strings que concatenen `req.body` o `req.query` directo en el SQL.
+Prisma y Drizzle parametrizan todas las queries por diseño — nunca interpolas un valor de usuario directo en un string SQL. Si en algún momento hace falta una query cruda (`$queryRaw`/`sql` de Drizzle), siempre con placeholders parametrizados, nunca con template strings que concatenen `req.body` o `req.query` directo en el SQL.
 
 ## Headers, CORS y rate limiting
 
@@ -42,7 +62,7 @@ El modelo son tres piezas, y la división entre ellas es lo que hace que funcion
 
 | Pieza | Dónde vive | Por qué |
 |-------|-----------|---------|
-| **Catálogo de permisos** (`ticket:crear`, `sla:editar`) | Código, `core/permissions/catalogo.ts` | Son los códigos exactos que las rutas piden con `requirePermission`. En la base, un typo en un INSERT dejaría un endpoint inalcanzable para todos y nadie se enteraría hasta el 403. Además el compilador avisa si un permiso dejó de usarse. |
+| **Catálogo de permisos** (`ticket:crear`, `sla:editar`) | Código, `src/permissions/catalogo.ts` | Son los códigos exactos que las rutas piden con `requirePermission`. En la base, un typo en un INSERT dejaría un endpoint inalcanzable para todos y nadie se enteraría hasta el 403. Además el compilador avisa si un permiso dejó de usarse. |
 | **Roles** | Tabla `Rol` | Datos operativos, se crean y renombran sin tocar código. |
 | **Concesiones** (qué rol tiene qué permiso) | Tabla `RolPermiso` | Es exactamente lo que se administra sin redeploy. |
 
@@ -70,13 +90,13 @@ Reglas que se siguen de eso:
 Ver `assets/backend/permissions/` (catálogo, resolución y `role.middleware.ts`) y los modelos
 `Permiso`/`RolPermiso` en `assets/prisma/schema.prisma.example`.
 
-Esto es **complementario** a lo de abajo, no un reemplazo: el permiso responde "¿podés hacer esta
-clase de cosa?" y el ownership responde "¿podés tocar *este* registro?". Un agente con
+Esto es **complementario** a lo de abajo, no un reemplazo: el permiso responde "¿puedes hacer esta
+clase de cosa?" y el ownership responde "¿puedes tocar *este* registro?". Un agente con
 `ticket:cambiar-estado` sigue sin poder mover un ticket que no tiene asignado.
 
 ## Autorización — IDOR
 
-Autenticar (¿quién sos?) no es lo mismo que autorizar (¿podés tocar *este* recurso puntual?). Un usuario logueado que pide `/api/tasks/123` no debería poder leer o modificar una tarea de otro usuario solo por adivinar el ID. `assertOwner(recurso.userId, req.user.id)` en `middlewares/auth.middleware.ts` es obligatorio en todo endpoint que devuelve o modifica un recurso de un usuario específico — ver el uso real en `assets/backend/example.service.prisma.ts`/`.drizzle.ts` (`getTaskById` llama a `assertOwner` antes de devolver la tarea).
+Autenticar (¿quién eres?) no es lo mismo que autorizar (¿puedes tocar *este* recurso puntual?). Un usuario logueado que pide `/api/tasks/123` no debería poder leer o modificar una tarea de otro usuario solo por adivinar el ID. `assertOwner(recurso.userId, req.user.id)` en `middlewares/auth.middleware.ts` es obligatorio en todo endpoint que devuelve o modifica un recurso de un usuario específico — ver el uso real en `assets/backend/example.service.prisma.ts`/`.drizzle.ts` (`getTaskById` llama a `assertOwner` antes de devolver la tarea).
 
 ## XSS en frontend
 
@@ -84,7 +104,7 @@ React escapa el contenido interpolado en JSX por defecto — el riesgo real est�
 
 ## Dependencias
 
-`npm audit` antes de un release es buena práctica — no lo conviertas en un paso obligatorio de CI desde el día 1 (mismo criterio de `dev-FS`: costo real se agrega cuando hay evidencia de que hace falta, no por defecto).
+`npm audit` antes de un release es buena práctica — no lo conviertas en un paso obligatorio de CI desde el día 1 (el costo real se agrega cuando hay evidencia de que hace falta).
 
 ## Checklist de auditoría OWASP Top 10
 

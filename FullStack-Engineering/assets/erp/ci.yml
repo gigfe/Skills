@@ -1,0 +1,52 @@
+# Copiar a .github/workflows/ci.yml. Adapta scripts y rutas a tu repo.
+# Orden: de lo más barato a lo más caro. Fija las actions por SHA según tu política.
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm audit --omit=dev --audit-level=high
+
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - name: Base con pgTAP
+        run: |
+          docker build -t erp-pgtap -f db/Dockerfile.pgtap db
+          docker run -d --name db -p 127.0.0.1:5432:5432 -e POSTGRES_PASSWORD=ci -e POSTGRES_DB=erp erp-pgtap
+          until docker exec db pg_isready -U postgres -d erp -h 127.0.0.1; do sleep 1; done
+      - name: Roles
+        run: >
+          docker exec -i db psql -U postgres -d erp -v owner_password=ci -v app_password=ci
+          < db/bootstrap-roles.sql
+      - name: Migraciones y tests
+        run: |
+          docker exec db psql -U postgres -d erp -c 'CREATE EXTENSION pgtap;'
+          # db:migrate corre tu herramienta de migraciones conectando como erp_owner.
+          npm run db:migrate
+          npm run db:test
+
+  integration:
+    runs-on: ubuntu-latest
+    needs: [verify, database]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npm run test:integration  # Testcontainers usa el Docker del runner
+      - run: npm run build

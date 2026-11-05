@@ -23,7 +23,7 @@ services:
       - backend
     restart: unless-stopped
 
-  # A diferencia de SQL Server, Postgres en contenedor Linux es un target de
+  # Postgres en contenedor Linux es un target de
   # producción razonable (no solo para dev). Si el hosting ofrece Postgres
   # gestionado (RDS, Neon, Supabase, Azure Database for PostgreSQL), comentar
   # este servicio y apuntar DATABASE_URL al endpoint gestionado en su lugar.

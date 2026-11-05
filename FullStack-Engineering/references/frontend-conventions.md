@@ -1,6 +1,8 @@
-# Frontend — Convenciones React + Vite + Tailwind
+# Perfil Express — React + Vite + Tailwind
 
-## Estructura (Fase 4 de `dev-FS`)
+Para el Perfil ERP, usa `erp-frontend.md`.
+
+## Estructura
 
 ```
 src/
@@ -39,11 +41,11 @@ export async function fetchTasks(page: number, token: string) {
 
 ## Tailwind
 
-Clases utilitarias directas en el JSX, sin capa de CSS-in-JS adicional. Paleta neutra (`slate`) por defecto para UI interna — no es un sitio de marca, prioriza consistencia y legibilidad sobre identidad visual distintiva (mismo argumento que usa la skill hermana `Software Engineering` para no aplicar el plugin "frontend-design" acá).
+Clases utilitarias directas en el JSX, sin capa de CSS-in-JS adicional. Paleta neutra (`slate`) por defecto para UI interna — no es un sitio de marca, prioriza consistencia y legibilidad sobre identidad visual distintiva.
 
 ## Responsive (mobile-first)
 
-Diseñar mobile-first: escribí primero las clases sin prefijo (aplican a mobile) y agregá
+Diseñar mobile-first: escribe primero las clases sin prefijo (aplican a mobile) y agrega
 `sm:`/`md:`/`lg:`/`xl:` solo donde el layout necesita cambiar en pantallas más grandes — nunca al
 revés (armar para desktop y "parchear" mobile al final), porque ahí es donde se cuelan overflows
 horizontales, botones que no entran y texto cortado.
@@ -77,8 +79,7 @@ Caso de referencia real: en `LoginPage.tsx` de un proyecto reciente el formulari
 escrito en Tailwind (`w-full max-w-sm`, estados `focus` correctos) pero nunca se verificó en un
 viewport angosto ni se pensó en estados de error/loading más allá de lo mínimo — quedó
 funcionalmente correcto pero sin que nadie revisara el resultado real en mobile. La lección: el
-checklist final de `SKILL.md` incluye "probado mentalmente en mobile" como paso explícito, no
-asumido.
+checklist final de `SKILL.md` exige revisar mobile como paso explícito.
 
 ## Seguridad en frontend
 

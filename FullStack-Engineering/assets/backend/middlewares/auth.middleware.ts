@@ -57,6 +57,6 @@ export const verifyToken: RequestHandler = async (req: AuthenticatedRequest, _re
 // antes de devolver o modificar el recurso.
 export function assertOwner(resourceOwnerId: number, requestingUserId: number | undefined) {
   if (requestingUserId === undefined || resourceOwnerId !== requestingUserId) {
-    throw new AppError('No tenés permiso sobre este recurso', 403);
+    throw new AppError('No tienes permiso sobre este recurso', 403);
   }
 }

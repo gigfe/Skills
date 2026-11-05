@@ -1,6 +1,6 @@
 # Backlog
 
-Ver Fase 3 de `dev-FS` para el criterio Kanban (solo) vs Scrum adaptado (equipo). Una tabla por módulo/épica, IDs correlativos `US-###` nunca reciclados.
+Kanban si trabaja una persona; Scrum adaptado si hay equipo. Una tabla por módulo/épica, IDs correlativos `US-###` nunca reciclados.
 
 ## Módulo: <nombre>
 

@@ -1,10 +1,12 @@
-# Postgres — Prisma vs Drizzle
+# Perfil Express — Prisma vs Drizzle
 
-Se pregunta una vez por proyecto (ver flujo de scaffolding en `SKILL.md`), revisando primero `.claude/memory/context.md` y si ya existe `prisma/schema.prisma` o `drizzle/schema.ts` en el proyecto — no se repregunta si ya hay evidencia.
+En el Perfil ERP no se usa nada de esto: ver `erp-database.md`.
+
+Se pregunta una vez por proyecto (ver `express-profile.md`), revisando primero `.claude/memory/context.md` y si ya existe `prisma/schema.prisma` o `drizzle/schema.ts` en el proyecto — no se repregunta si ya hay evidencia.
 
 ## Cuándo conviene cada uno
 
-- **Prisma**: mejor developer experience, cliente autogenerado y tipado, migraciones con `prisma migrate dev` casi sin fricción. Punto de entrada por defecto para alguien afianzando el stack — recomendalo si el usuario no tiene preferencia.
+- **Prisma**: mejor developer experience, cliente autogenerado y tipado, migraciones con `prisma migrate dev` casi sin fricción. Punto de entrada por defecto para alguien afianzando el stack — recomiéndalo si el usuario no tiene preferencia.
 - **Drizzle**: más cercano al SQL puro (las queries se leen casi como SQL), sin paso de generación de cliente, mejor cuando la base de datos ya existe y tiene un schema complejo que no calza bien con las convenciones de Prisma.
 
 No hay opción incorrecta — ambos dan migraciones versionadas y queries parametrizadas (protección contra SQL injection por diseño, ver `security.md`). Elegir uno y no mezclar ambos en el mismo proyecto.
@@ -59,4 +61,4 @@ Son cosas distintas que suenan parecido — no fusionarlas ni nombrarlas igual.
 
 ## Pooling (diferido)
 
-En dev y en proyectos chicos, el pool default de Prisma/`pg` alcanza. Si el proyecto escala a múltiples réplicas del backend contra la misma base, considerar PgBouncer delante de Postgres — no agregarlo sin esa señal real, mismo criterio de `dev-FS` para todo lo que cuesta configuración.
+En dev y en proyectos chicos, el pool default de Prisma/`pg` alcanza. Si el proyecto escala a múltiples réplicas del backend contra la misma base, considerar PgBouncer delante de Postgres — no agregarlo sin esa señal real.

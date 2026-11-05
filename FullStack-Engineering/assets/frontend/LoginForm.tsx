@@ -1,9 +1,7 @@
 import { FormEvent, useState } from 'react';
 
-// Punto de partida funcional, sin identidad visual — a diferencia del stack
-// SQL Server (que fija un diseño de login de marca), acá dev-FS no fija
-// ninguna decisión de diseño. Adaptá clases/layout al branding de cada
-// proyecto, esto solo resuelve el comportamiento (estado, submit, error).
+// Punto de partida funcional, sin identidad visual. Adapta clases y layout al
+// branding de cada proyecto; esto solo resuelve el comportamiento (estado, submit, error).
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => Promise<void>;
 }

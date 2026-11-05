@@ -16,7 +16,7 @@ export function requirePermission(...permisos: Permiso[]): RequestHandler {
   return (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     const concedidos = req.user?.permisos;
     if (!concedidos || !permisos.every((permiso) => concedidos.has(permiso))) {
-      return next(new AppError('No tenés permiso para esta acción', 403));
+      return next(new AppError('No tienes permiso para esta acción', 403));
     }
     next();
   };
@@ -27,7 +27,7 @@ export function requireAnyPermission(...permisos: Permiso[]): RequestHandler {
   return (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     const concedidos = req.user?.permisos;
     if (!concedidos || !permisos.some((permiso) => concedidos.has(permiso))) {
-      return next(new AppError('No tenés permiso para esta acción', 403));
+      return next(new AppError('No tienes permiso para esta acción', 403));
     }
     next();
   };
